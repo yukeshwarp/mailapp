@@ -2,3 +2,4 @@ streamlit
 msal
 requests
 openai
+html2text
