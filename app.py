@@ -51,10 +51,10 @@ def get_access_token():
     else:  
         st.error(f"Error acquiring token: {result.get('error_description')}")  
         return None  
-  
+
 def fetch_emails(access_token, user_email):  
     """Fetch emails from the user's inbox."""  
-    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?$select=subject,from,body"  
+    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?$select=subject,from,bodyPreview,body"  
     headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}  
     response = requests.get(url, headers=headers)  
     if response.status_code == 200:  
@@ -62,22 +62,36 @@ def fetch_emails(access_token, user_email):
     else:  
         st.error(f"Error fetching emails: {response.status_code} - {response.text}")  
         return []  
-  
-st.title("Outlook Mail Viewer")  
-  
+
+st.title("Outlook Mail Viewer with QA")  
+
 user_email = st.text_input("Enter User Email")  
-  
+user_query = st.text_input("Ask a question about the emails")  # New input field for queries
+
 if st.button("Fetch Emails"):  
     token = get_access_token()  
     if token:  
         if user_email:  
             mails = fetch_emails(token, user_email)  
-            st.write(len(mails))
+            st.write(f"Found {len(mails)} email(s)")
+
+            # Show emails in the app
             h = html2text.HTML2Text()  
             h.ignore_links = True  
             for mail in mails:
                 st.write(f"Subject: {mail['subject']}\n")
                 st.write(f"From: {mail['from']['emailAddress']['address']}\n")
                 st.write(f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}")
+
+            # Check if a user has asked a question
+            if user_query:
+                st.write("Answering the query based on the emails...")
+
+                # Use the query_responder function to generate the answer
+                answer = query_responder(user_query, mails)
+                st.write(f"Answer: {answer}")
+                
         else:  
-            st.error("Error reading mail") 
+            st.error("Please enter a valid email address.") 
+    else:
+        st.error("Error acquiring access token.")
