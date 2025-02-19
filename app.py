@@ -81,13 +81,10 @@ if st.button("Fetch Emails"):
                 # st.write("---")
                 h = html2text.HTML2Text()  
                 h.ignore_links = True  
-
-                mail_details = "\n".join([  
-                    f"Subject: {mail['subject']}\n"  
-                    f"From: {mail['from']['emailAddress']['address']}\n"  
-                    f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}"  
-                    for mail in mails  
-                ]) 
-                st.write(mail_details)
+                for mail in mails:
+                    st.write(f"Subject: {mail['subject']}\n")
+                    st.write(f"From: {mail['from']['emailAddress']['address']}\n")
+                    st.write(f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}")
+                #st.write(mail_details)
         else:  
             st.error("Error reading mail") 
