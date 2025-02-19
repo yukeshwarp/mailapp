@@ -72,20 +72,20 @@ if st.button("Fetch Emails"):
     if token:  
         if user_email:  
             mails = fetch_emails(token, user_email)  
-            for mail in mails:  
+            # for mail in mails:  
                 #with st.expander(mail["subject"]):  
                 # print(mail)
                 # st.write(f"**From:** {mail['from']['emailAddress']['address']}")  
                 # #st.write(f"**Received:** {mail['receivedDateTime']}")  
                 # st.write(f"**Body:** {mail.get('body', 'No preview available')}")  
                 # st.write("---")
-                h = html2text.HTML2Text()  
-                h.ignore_links = True  
-                for mail in mails:
-                    st.write(f"Subject: {mail['subject']}\n")
-                    st.write(f"From: {mail['from']['emailAddress']['address']}\n")
-                    st.write(f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}")
-                    break
+            h = html2text.HTML2Text()  
+            h.ignore_links = True  
+            for mail in mails:
+                st.write(f"Subject: {mail['subject']}\n")
+                st.write(f"From: {mail['from']['emailAddress']['address']}\n")
+                st.write(f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}")
+                break
                 #st.write(mail_details)
         else:  
             st.error("Error reading mail") 
