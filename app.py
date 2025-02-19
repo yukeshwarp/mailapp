@@ -78,7 +78,7 @@ st.title("Outlook Mail Viewer with QA")
 user_email = st.text_input("Enter User Email")  
 user_query = st.text_input("Ask a question about the emails")  # New input field for queries
 
-if st.button("Fetch Emails"):  
+if st.button("Ask"):  
     token = get_access_token()  
     if token:  
         if user_email:  
