@@ -70,7 +70,7 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 # User input (email address)
-user_email = st.text_input("Enter User Email")
+user_email = "Yukeshwar@docu3c.com"
 
 # Chat interaction
 user_input = st.chat_input("Ask me something about your email")
