@@ -40,78 +40,53 @@ def query_responder(query, mails):
     )
     return response.choices[0].message.content.strip()
 
-def get_access_token():
-    """Get access token using MSAL."""
-    app = msal.ConfidentialClientApplication(
-        CLIENT_ID, authority=AUTHORITY, client_credential=CLIENT_SECRET
-    )
-    result = app.acquire_token_for_client(scopes=SCOPE)
-    if "access_token" in result:
+def get_access_token():  
+    app = msal.ConfidentialClientApplication(  
+        CLIENT_ID, authority=AUTHORITY, client_credential=CLIENT_SECRET  
+    )  
+    result = app.acquire_token_for_client(scopes=SCOPE)  
+    if "access_token" in result:  
         return result["access_token"]
-    else:
-        st.error(f"Error acquiring token: {result.get('error_description')}")
-        return None
+    else:  
+        st.error(f"Error acquiring token: {result.get('error_description')}")  
+        return None  
+  
+def fetch_emails(access_token, user_email):  
+    """Fetch emails from the user's inbox."""  
+    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?$select=subject,from,body"  
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}  
+    response = requests.get(url, headers=headers)  
+    if response.status_code == 200:  
+        return response.json().get("value", [])  
+    else:  
+        st.error(f"Error fetching emails: {response.status_code} - {response.text}")  
+        return []  
+  
+st.title("Outlook Mail Viewer")  
+  
+user_email = st.text_input("Enter User Email")  
+  
+if st.button("Fetch Emails"):  
+    token = get_access_token()  
+    if token:  
+        if user_email:  
+            mails = fetch_emails(token, user_email)  
+            for mail in mails:  
+                #with st.expander(mail["subject"]):  
+                # print(mail)
+                # st.write(f"**From:** {mail['from']['emailAddress']['address']}")  
+                # #st.write(f"**Received:** {mail['receivedDateTime']}")  
+                # st.write(f"**Body:** {mail.get('body', 'No preview available')}")  
+                # st.write("---")
+                h = html2text.HTML2Text()  
+                h.ignore_links = True  
 
-def fetch_emails(access_token, user_email):
-    """Fetch emails from the user's inbox."""
-    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages"
-    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json().get("value", [])
-    else:
-        st.error(f"Error fetching emails: {response.status_code} - {response.text}")
-        return []
-
-st.title("Outlook Mail Viewer and LLM Assistant")
-
-# Chat history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-# User input (email address)
-user_email = "Yukeshwar@docu3c.com"
-
-# Chat interaction
-user_input = st.chat_input("Ask me something about your email")
-
-if user_input:
-    # Add user message to chat history
-    st.session_state.chat_history.append({"role": "user", "content": user_input})
-
-    # Get access token
-    token = get_access_token()
-    if token:
-        if user_email:
-            mails = fetch_emails(token, user_email)
-            if mails:
-                # Send the emails to the LLM for generating the response
-                assistant_response = query_responder(user_input, mails)
-                
-                # Add assistant's response to chat history
-                st.session_state.chat_history.append({
-                    "role": "assistant",
-                    "content": f"Here's the response to your query:\n{assistant_response}"
-                })
-            else:
-                st.session_state.chat_history.append({
-                    "role": "assistant",
-                    "content": "I couldn't find any emails in your inbox. Try again later."
-                })
-        else:
-            st.session_state.chat_history.append({
-                "role": "assistant",
-                "content": "Please enter a valid user email."
-            })
-
-    # Display chat history
-    for message in st.session_state.chat_history:
-        st.chat_message(message["role"]).markdown(message["content"])
-
-    # Generate the response using LLM for further user queries
-    if user_input.lower() in ["show me more", "tell me more", "get more details"]:
-        st.session_state.chat_history.append({"role": "user", "content": "Show me more emails."})
-        # Fetch the next set of emails or details, then display
-        # You can add logic to fetch more emails or continue the conversation
-        st.rerun()
-
+                mail_details = "\n".join([  
+                    f"Subject: {mail['subject']}\n"  
+                    f"From: {mail['from']['emailAddress']['address']}\n"  
+                    f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}"  
+                    for mail in mails  
+                ]) 
+                st.write(mail_details)
+        else:  
+            st.error("Error reading mail") 
