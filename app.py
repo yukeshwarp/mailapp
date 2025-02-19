@@ -4,6 +4,7 @@ import requests
 import json
 import os
 from openai import AzureOpenAI
+import html2text
 
 # Azure app registration details
 CLIENT_ID = os.getenv("CLIENT_ID")
