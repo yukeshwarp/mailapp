@@ -113,5 +113,5 @@ if user_input:
         st.session_state.chat_history.append({"role": "user", "content": "Show me more emails."})
         # Fetch the next set of emails or details, then display
         # You can add logic to fetch more emails or continue the conversation
-        st.experimental_rerun()
+        st.rerun()
 
