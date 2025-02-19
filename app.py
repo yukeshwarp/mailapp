@@ -85,6 +85,7 @@ if st.button("Fetch Emails"):
                     st.write(f"Subject: {mail['subject']}\n")
                     st.write(f"From: {mail['from']['emailAddress']['address']}\n")
                     st.write(f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}")
+                    break
                 #st.write(mail_details)
         else:  
             st.error("Error reading mail") 
