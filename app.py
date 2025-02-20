@@ -25,7 +25,7 @@ def query_responder(query, mails):
     h = html2text.HTML2Text()  
     h.ignore_links = True  
 
-    mail_details = "\n".join([
+    mail_details = "\n".join([  # Combine relevant email details
         f"Subject: {mail.get('subject', 'No Subject')}\n"
         f"From: {mail.get('from', {}).get('emailAddress', {}).get('address', 'Unknown Sender')}\n"
         f"Body: {h.handle(mail['body']['content']) if mail.get('body', {}).get('contentType') == 'html' else mail.get('body', {}).get('content', 'No Content')}"
@@ -35,8 +35,8 @@ def query_responder(query, mails):
     prompt = f"Respond to the user's query based on the following email details:\n{mail_details}\n\nUser's Query: {query}"
     
     response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
+        model="gpt-4o",  # Specify GPT model
+        messages=[  # Provide prompt to the model
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt}
         ],
