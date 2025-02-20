@@ -74,6 +74,7 @@ def fetch_emails(access_token, user_email):
 
     return all_mails
 
+# Streamlit app UI
 st.title("Outlook Mail Viewer with QA")  
 
 user_email = st.text_input("Enter User Email")  
@@ -86,14 +87,6 @@ if st.button("Ask"):
             mails = fetch_emails(token, user_email)  
             st.write(f"Found {len(mails)} email(s)")
 
-            # Show emails in the app
-            # h = html2text.HTML2Text()  
-            # h.ignore_links = True  
-            # for mail in mails:
-            #     st.write(f"Subject: {mail['subject']}\n")
-            #     st.write(f"From: {mail['from']['emailAddress']['address']}\n")
-            #     st.write(f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}")
-
             # Check if a user has asked a question
             if user_query:
                 st.write("Answering the query based on the emails...")
@@ -101,6 +94,20 @@ if st.button("Ask"):
                 # Use the query_responder function to generate the answer
                 answer = query_responder(user_query, mails)
                 st.write(f"Answer: {answer}")
+                
+            # Convert mails list to JSON
+            mails_json = json.dumps(mails, indent=4)
+
+            # Display the JSON content in the app
+            st.json(mails_json)
+
+            # Create a download button to download the JSON file
+            st.download_button(
+                label="Download Emails as JSON", 
+                data=mails_json, 
+                file_name="emails.json", 
+                mime="application/json"
+            )
                 
         else:  
             st.error("Please enter a valid email address.") 
