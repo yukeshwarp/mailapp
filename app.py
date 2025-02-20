@@ -74,6 +74,19 @@ def fetch_emails(access_token, user_email):
 
     return all_mails
 
+def convert_emails_to_json(mails):
+    """Convert email data to JSON format after processing HTML content."""
+    h = html2text.HTML2Text()  
+    h.ignore_links = True  
+
+    for mail in mails:
+        # Convert HTML body to plain text
+        if mail.get('body', {}).get('contentType') == 'html':
+            mail['body']['content'] = h.handle(mail['body']['content'])
+    
+    # Convert the processed mails list to JSON
+    return json.dumps(mails, indent=4)
+
 # Streamlit app UI
 st.title("Outlook Mail Viewer with QA")  
 
@@ -95,8 +108,8 @@ if st.button("Ask"):
                 answer = query_responder(user_query, mails)
                 st.write(f"Answer: {answer}")
                 
-            # Convert mails list to JSON
-            mails_json = json.dumps(mails, indent=4)
+            # Convert mails list to JSON after processing HTML content
+            mails_json = convert_emails_to_json(mails)
 
             # Display the JSON content in the app
             st.json(mails_json)
