@@ -20,7 +20,7 @@ client = AzureOpenAI(
     api_version="2024-10-01-preview",
 )
 
-`def query_responder(query, mails):
+def query_responder(query, mails):
     """Respond to user query using the mail details."""
     h = html2text.HTML2Text()  
     h.ignore_links = True  
