@@ -82,9 +82,8 @@ def fetch_emails(access_token, user_email):
     return all_mails
 
 st.title("Outlook Mail Viewer with QA")  
-
+mails = ""
 user_email = st.text_input("Enter User Email")  
-user_query = st.text_input("Ask a question about the emails")  # New input field for queries
 if st.button("Fetch mails"):
     token = get_access_token()  
     if token: 
@@ -96,28 +95,17 @@ if st.button("Fetch mails"):
     else:
         st.error("Error acquiring access token.")
 
+user_query = st.text_input("Ask a question about the emails")  # New input field for queries
+
             
 if st.button("Ask"):  
-    
-    if mails:
-        # Show emails in the app
-        # h = html2text.HTML2Text()  
-        # h.ignore_links = True  
-        # for mail in mails:
-        #     st.write(f"Subject: {mail['subject']}\n")
-        #     st.write(f"From: {mail['from']['emailAddress']['address']}\n")
-        #     st.write(f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}")
+    if user_query:
+        st.write("Answering the query based on the emails...")
 
-        # Check if a user has asked a question
-        if user_query:
-            st.write("Answering the query based on the emails...")
-
-            # Use the query_responder function to generate the answer
-            answer = query_responder(user_query, mails)
-            st.write(f"Answer: {answer}")
-        else:
-            st.error("Enter a query to ask.")
-    else:  
-        st.error("Please enter a valid email address.") 
+        # Use the query_responder function to generate the answer
+        answer = query_responder(user_query, mails)
+        st.write(f"Answer: {answer}")
+    else:
+        st.error("Enter a query to ask.")
 else:
     st.error("Application cant process your mails")
