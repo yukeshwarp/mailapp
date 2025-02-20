@@ -85,14 +85,14 @@ st.title("Outlook Mail Viewer with QA")
 
 user_email = st.text_input("Enter User Email")  
 user_query = st.text_input("Ask a question about the emails")  # New input field for queries
-
+token = get_access_token()  
 if token:  
         if user_email:  
             mails = fetch_emails(token, user_email)  
             st.write(f"Found {len(mails)} email(s)")
             
 if st.button("Ask"):  
-    token = get_access_token()  
+    
     if mails:
         # Show emails in the app
         # h = html2text.HTML2Text()  
@@ -109,6 +109,8 @@ if st.button("Ask"):
             # Use the query_responder function to generate the answer
             answer = query_responder(user_query, mails)
             st.write(f"Answer: {answer}")
+        else:
+            st.error("Enter a query to ask.")
             
     else:  
         st.error("Please enter a valid email address.") 
