@@ -88,22 +88,24 @@ if st.button("Fetch mails"):
     token = get_access_token()  
     if token: 
         if user_email:  
-            mails = str(fetch_emails(token, user_email))
+            mails = fetch_emails(token, user_email)
             st.write(f"Found {len(mails)} email(s)")
+            user_query = st.text_input("Ask a question about the emails")  # New input field for queries
+            if st.button("Ask"):  
+                if user_query:
+                    st.write("Answering the query based on the emails...")
+            
+                    # Use the query_responder function to generate the answer
+                    answer = query_responder(user_query, mails)
+                    st.write(f"Answer: {answer}")
+                else:
+                    st.error("Enter a query to ask.")
+
         else:
             st.error("Enter a valid mail id.")
     else:
         st.error("Error acquiring access token.")
 
-user_query = st.text_input("Ask a question about the emails")  # New input field for queries
+
 
             
-if st.button("Ask"):  
-    if user_query:
-        st.write("Answering the query based on the emails...")
-
-        # Use the query_responder function to generate the answer
-        answer = query_responder(user_query, mails)
-        st.write(f"Answer: {answer}")
-    else:
-        st.error("Enter a query to ask.")
