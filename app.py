@@ -28,6 +28,7 @@ def query_responder(query, mails):
     mail_details = "\n".join([  # Combine relevant email details
         f"Subject: {mail.get('subject', 'No Subject')}\n"
         f"From: {mail.get('from', {}).get('emailAddress', {}).get('address', 'Unknown Sender')}\n"
+        f"Received: {mail.get('receivedDateTime', 'Unknown Time')}\n"  # Include received time
         f"Body: {h.handle(mail['body']['content']) if mail.get('body', {}).get('contentType') == 'html' else mail.get('body', {}).get('content', 'No Content')}"
         for mail in mails
     ])
@@ -57,7 +58,7 @@ def get_access_token():
 
 def fetch_emails(access_token, user_email):
     """Fetch all emails from the user's inbox using pagination."""
-    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?$select=subject,from,bodyPreview,body"
+    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?$select=subject,from,bodyPreview,body,receivedDateTime"
     headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
     
     all_mails = []
