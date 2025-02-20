@@ -81,8 +81,7 @@ def fetch_emails(access_token, user_email):
 
     return all_mails
 
-st.title("Outlook Mail Viewer with QA")  
-mails = ""
+st.title("docQuest Mailer")
 user_email = st.text_input("Enter User Email")  
 if st.button("Fetch mails"):
     token = get_access_token()  
