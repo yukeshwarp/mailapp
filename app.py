@@ -62,21 +62,25 @@ def get_access_token():
         st.error(f"Error acquiring token: {result.get('error_description')}")  
         return None  
 
-def fetch_emails(access_token, user_email):  
-    """Fetch emails from the user's inbox."""  
-    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?$select=subject,from,bodyPreview,body"  
-    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}  
-    response = requests.get(url, headers=headers)  
-    if response.status_code == 200:  
-        return response.json().get("value", [])  
-    else:  
-        st.error(f"Error fetching emails: {response.status_code} - {response.text}")  
-        return []  
+def fetch_emails(access_token, user_email):
+    """Fetch all emails from the user's inbox using pagination."""
+    url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?$select=subject,from,bodyPreview,body"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    
+    all_mails = []
+    
+    while url:  # Loop through paginated results
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            all_mails.extend(data.get("value", []))  # Append emails to the list
+            url = data.get("@odata.nextLink")  # Get next page URL
+        else:
+            st.error(f"Error fetching emails: {response.status_code} - {response.text}")
+            break  # Stop if there's an error
 
-st.title("Outlook Mail Viewer with QA")  
+    return all_mails
 
-user_email = st.text_input("Enter User Email")  
-user_query = st.text_input("Ask a question about the emails")  # New input field for queries
 
 if st.button("Ask"):  
     token = get_access_token()  
