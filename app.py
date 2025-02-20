@@ -19,9 +19,11 @@ client = AzureOpenAI(
     api_key=os.getenv("LLM_KEY"),
     api_version="2024-10-01-preview",
 )
-
 def query_responder(query, mails):
     """Respond to user query using the mail details."""
+    # Create a prompt to ask the LLM for a response based on the emails.
+    #mail_details = "\n".join([f"Subject: {mail['subject']}\nFrom: {mail['from']['emailAddress']['address']}\nBody: {mail['bodyPreview']}" for mail in mails])
+    
     h = html2text.HTML2Text()  
     h.ignore_links = True  
 
@@ -33,16 +35,44 @@ def query_responder(query, mails):
     ])
 
     prompt = f"Respond to the user's query based on the following email details:\n{mail_details}\n\nUser's Query: {query}"
-    
+    # Use LLM to respond to the user query based on mail details.
     response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt}
-        ],
+        model="gpt-4o",  # Replace with your model ID
+        messages=[{
+            "role": "system",
+            "content": "You are a helpful assistant.",
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }],
         temperature=0.5,
     )
     return response.choices[0].message.content.strip()
+
+# def query_responder(query, mails):
+#     """Respond to user query using the mail details."""
+#     h = html2text.HTML2Text()  
+#     h.ignore_links = True  
+
+#     mail_details = "\n".join([  
+#         f"Subject: {mail['subject']}\n"  
+#         f"From: {mail['from']['emailAddress']['address']}\n"  
+#         f"Body: {h.handle(mail['body']['content']) if mail['body']['contentType'] == 'html' else mail['body']['content']}"  
+#         for mail in mails  
+#     ])
+
+#     prompt = f"Respond to the user's query based on the following email details:\n{mail_details}\n\nUser's Query: {query}"
+    
+#     response = client.chat.completions.create(
+#         model="gpt-4o",
+#         messages=[
+#             {"role": "system", "content": "You are a helpful assistant."},
+#             {"role": "user", "content": prompt}
+#         ],
+#         temperature=0.5,
+#     )
+#     return response.choices[0].message.content.strip()
 
 def get_access_token():  
     app = msal.ConfidentialClientApplication(  
