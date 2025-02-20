@@ -88,7 +88,7 @@ if st.button("Fetch mails"):
     token = get_access_token()  
     if token: 
         if user_email:  
-            mails = fetch_emails(token, user_email)  
+            mails = str(fetch_emails(token, user_email))
             st.write(f"Found {len(mails)} email(s)")
         else:
             st.error("Enter a valid mail id.")
@@ -107,5 +107,3 @@ if st.button("Ask"):
         st.write(f"Answer: {answer}")
     else:
         st.error("Enter a query to ask.")
-else:
-    st.error("Application cant process your mails")
