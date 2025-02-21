@@ -24,13 +24,13 @@ def query_responder(query, mails):
     """Respond to user query using the mail details."""
     h = html2text.HTML2Text()  
     h.ignore_links = True  
-
+    mails_s = mails[0:10]
     mail_details = "\n".join([  # Combine relevant email details
         f"Subject: {mail.get('subject', 'No Subject')}\n"
         f"From: {mail.get('from', {}).get('emailAddress', {}).get('address', 'Unknown Sender')}\n"
         f"Received: {mail.get('receivedDateTime', 'Unknown Time')}\n"  # Include received time
         f"Body: {h.handle(mail['body']['content']) if mail.get('body', {}).get('contentType') == 'html' else mail.get('body', {}).get('content', 'No Content')}"
-        for mail in mails
+        for mail in mails_s
     ])
 
     prompt = f"Respond to the user's query based on the following email details:\n{mail_details}\n\nUser's Query: {query}"
