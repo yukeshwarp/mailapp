@@ -68,7 +68,7 @@ def fetch_emails(access_token, user_email):
     """Fetch emails with additional metadata from Outlook."""
     url = f"https://graph.microsoft.com/v1.0/users/{user_email}/messages?" \
           f"$select=subject,from,toRecipients,ccRecipients,bccRecipients,bodyPreview,body,receivedDateTime,sentDateTime," \
-          f"importance,priority,hasAttachments,categories,conversationId,conversationIndex,isRead,isDraft,webLink"
+          f"importance,hasAttachments,categories,conversationId,conversationIndex,isRead,isDraft,webLink"
     headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
 
     all_mails = []
