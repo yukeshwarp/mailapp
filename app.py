@@ -24,7 +24,7 @@ def query_responder(query, mails):
     """Respond to user query using the mail details."""
     h = html2text.HTML2Text()  
     h.ignore_links = True  
-    mails_s = mails[0:100]
+    mails_s = mails[0:50]
     mail_details = "\n".join([  # Combine relevant email details
         f"Subject: {mail.get('subject', 'No Subject')}\n"
         f"From: {mail.get('from', {}).get('emailAddress', {}).get('address', 'Unknown Sender')}\n"
