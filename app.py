@@ -31,7 +31,6 @@ def query_responder(query, mails):
         f"From: {mail.get('from', {}).get('emailAddress', {}).get('address', 'Unknown Sender')}\n"
         f"Received: {mail.get('receivedDateTime', 'Unknown Time')}\n"
         f"Importance: {mail.get('importance', 'Normal')}\n"
-        #f"Priority: {mail.get('priority', 'Normal')}\n"
         f"Has Attachment: {mail.get('hasAttachments', False)}\n"
         f"Categories: {', '.join(mail.get('categories', [])) if mail.get('categories') else 'None'}\n"
         f"Conversation ID: {mail.get('conversationId', 'N/A')}\n"
@@ -106,15 +105,14 @@ def convert_emails_to_json(mails):
             "receivedDateTime": mail.get("receivedDateTime", "Unknown Time"),
             "sentDateTime": mail.get("sentDateTime", "Unknown Time"),
             "importance": mail.get("importance", "Normal"),
-            #"priority": mail.get("priority", "Normal"),
-            # "hasAttachments": mail.get("hasAttachments", False),
-            # "categories": mail.get("categories", []),
-            # "conversationId": mail.get("conversationId", "N/A"),
-            # "conversationIndex": mail.get("conversationIndex", "N/A"),
-            # "isRead": mail.get("isRead", False),
-            # "isDraft": mail.get("isDraft", False),
-            # "webLink": mail.get("webLink", "No Link"),
-            # "body": h.handle(mail["body"]["content"]) if mail.get("body", {}).get("contentType") == "html" else mail.get("body", {}).get("content", "No Content")
+            "hasAttachments": mail.get("hasAttachments", False),
+            "categories": mail.get("categories", []),
+            "conversationId": mail.get("conversationId", "N/A"),
+            "conversationIndex": mail.get("conversationIndex", "N/A"),
+            "isRead": mail.get("isRead", False),
+            "isDraft": mail.get("isDraft", False),
+            "webLink": mail.get("webLink", "No Link"),
+            "body": h.handle(mail["body"]["content"]) if mail.get("body", {}).get("contentType") == "html" else mail.get("body", {}).get("content", "No Content")
         })
     
     return json.dumps(processed_mails, indent=4)
@@ -131,23 +129,23 @@ if st.button("Ask"):
         if user_email:
             mails = fetch_emails(token, user_email)
             st.write(f"Found {len(mails)} email(s)")
-            st.write(mails)
+
             if user_query:
                 st.write("Answering the query based on the emails...")
-            #     answer = query_responder(user_query, mails)
-            #     st.write(f"Answer: {answer}")
+                answer = query_responder(user_query, mails)
+                st.write(f"Answer: {answer}")
 
-            # # Convert to JSON
-            # mails_json = convert_emails_to_json(mails)
-            # st.json(mails_json)
+            # Convert to JSON
+            mails_json = convert_emails_to_json(mails)
+            st.json(mails_json)
 
-            # # JSON Download Button
-            # st.download_button(
-            #     label="Download Emails as JSON",
-            #     data=mails_json,
-            #     file_name="emails.json",
-            #     mime="application/json"
-            # )
+            # JSON Download Button
+            st.download_button(
+                label="Download Emails as JSON",
+                data=mails_json,
+                file_name="emails.json",
+                mime="application/json"
+            )
         else:
             st.error("Please enter a valid email address.")
     else:
